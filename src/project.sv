@@ -66,10 +66,6 @@ module vga_projekt_ed_nkpng_top(input logic MAX10_CLK1_50,
 		
 endmodule
 
-// ---------------------- video state enum ----------------------- //
-
-typedef enum logic [1:0] {SYN, BP, VID, FP} enum_state;
-
 // ------------------------- vga driver -------------------------- //
 
 module vga_driver(input logic clk,
@@ -78,7 +74,7 @@ module vga_driver(input logic clk,
 		output logic [11:0] vga_out,
 		output logic vga_hs, vga_vs);
 	
-	enum_state horz_state, vert_state;
+	logic [1:0] horz_state, vert_state;
 	
 	vga_timing vgatim_0(.clk(clk), 
 		.img_x(img_x), .img_y(img_y),
@@ -95,7 +91,7 @@ endmodule
 
 module vga_timing(input logic clk, 
 		output logic [9:0] img_x, img_y,
-		output enum_state horz_state, vert_state);
+		output logic [1:0] horz_state, vert_state);
 		
 	logic horz_rst, vert_rst;
 	
@@ -109,19 +105,19 @@ endmodule
 // ------------------------- vga output -------------------------- //
 
 module vga_output(input logic clk, 
-		input enum_state horz_state, vert_state,
+		input logic [1:0] horz_state, vert_state,
 		input logic [11:0] rgb_in,
 		output logic [11:0] vga_out,
 		output logic vga_hs, vga_vs);
 		
 	always_ff @(posedge clk) begin
-		if (horz_state == VID && vert_state == VID)
+		if (horz_state == 2'b10 && vert_state == 2'b10)
 			vga_out <= rgb_in;
 		else
 			vga_out <= 12'h000;
 			
-		vga_hs <= horz_state != SYN;
-		vga_vs <= vert_state != SYN;
+		vga_hs <= horz_state != 2'b00;
+		vga_vs <= vert_state != 2'b00;
 	end
 	
 endmodule
@@ -130,14 +126,14 @@ endmodule
 
 module horz_state_cnt(input logic clk, en,
 		output full_rst,
-		output enum_state state,
+		output logic [1:0] state,
 		output [9:0]cnt);
 	
 	logic [9:0]horz_cnt_goal;
 	logic horz_reset;
 	
 	assign horz_reset = cnt >= horz_cnt_goal;
-	assign full_rst = horz_reset && state == FP;
+	assign full_rst = horz_reset && state == 2'b11;
 	
 	video_state vids_0(.clk(clk), .en(en && horz_reset), .state(state));
 	
@@ -151,14 +147,14 @@ endmodule
 
 module vert_state_cnt(input logic clk, en,
 		output full_rst,
-		output enum_state state,
+		output logic [1:0] state,
 		output [9:0]cnt);
 	
 	logic [9:0]vert_cnt_goal;
 	logic vert_reset;
 	
 	assign vert_reset = cnt >= vert_cnt_goal;
-	assign full_rst = vert_reset && state == FP;
+	assign full_rst = vert_reset && state == 2'b11;
 	
 	video_state vids_0(.clk(clk), .en(en && vert_reset), .state(state));
 	
@@ -171,17 +167,17 @@ endmodule
 // ---------------- generic video state machine ------------------ //
 
 module video_state(input logic clk, en,
-		output enum_state state);
+		output logic [1:0] state);
 		
-	enum_state next_state;
+	logic [1:0] next_state;
 		
 	always_comb
 		case (state)
-			SYN:     next_state = BP;
-			BP:      next_state = VID;
-			VID:     next_state = FP;
-			FP:      next_state = SYN;
-			default: next_state = SYN;
+			2'b00:     next_state = 2'b01;
+			2'b01:      next_state = 2'b10;
+			2'b10:     next_state = 2'b11;
+			2'b11:      next_state = 2'b00;
+			default: next_state = 2'b00;
 		endcase
 		
 	always_ff @(posedge clk)
@@ -192,7 +188,7 @@ endmodule
 
 // ----------------- vga output timing constants ----------------- //
 
-module horz_timing(input enum_state horz_state,
+module horz_timing(input logic [1:0] horz_state,
 		output logic[9:0] horz_cnt_goal);
 
 	/*
@@ -203,16 +199,16 @@ module horz_timing(input enum_state horz_state,
 	*/
 	always_comb
 		case (horz_state)
-			SYN:     horz_cnt_goal = 10'd95;
-			BP:      horz_cnt_goal = 10'd47;
-			VID:     horz_cnt_goal = 10'd639;
-			FP:      horz_cnt_goal = 10'd15;
+			2'b00:     horz_cnt_goal = 10'd95;
+			2'b01:      horz_cnt_goal = 10'd47;
+			2'b10:     horz_cnt_goal = 10'd639;
+			2'b11:      horz_cnt_goal = 10'd15;
 			default: horz_cnt_goal = 10'd0;
 		endcase
 		
 endmodule
 
-module vert_timing(input enum_state vert_state,
+module vert_timing(input logic [1:0] vert_state,
 		output logic[9:0] vert_cnt_goal);
 	
 	/*
@@ -223,10 +219,10 @@ module vert_timing(input enum_state vert_state,
 	*/
 	always_comb
 		case (vert_state)
-			SYN:     vert_cnt_goal = 10'd1;
-			BP:      vert_cnt_goal = 10'd32;
-			VID:     vert_cnt_goal = 10'd479;
-			FP:      vert_cnt_goal = 10'd9;
+			2'b00:     vert_cnt_goal = 10'd1;
+			2'b01:      vert_cnt_goal = 10'd32;
+			2'b10:     vert_cnt_goal = 10'd479;
+			2'b11:      vert_cnt_goal = 10'd9;
 			default:	vert_cnt_goal = 10'd0;
 		endcase
 	
@@ -289,8 +285,8 @@ module testbench();
 	initial begin
 		// No reset was implemented so internal signals have to be reset here
 		dut_0.clk = 0;
-		dut_0.vgad_0.vgatim_0.hsc_0.vids_0.state = SYN;
-		dut_0.vgad_0.vgatim_0.vsc_0.vids_0.state = SYN;
+		dut_0.vgad_0.vgatim_0.hsc_0.vids_0.state = 2'b00;
+		dut_0.vgad_0.vgatim_0.vsc_0.vids_0.state = 2'b00;
 		dut_0.vgad_0.vgatim_0.hsc_0.scnt_0.cnt = 10'b0;
 		dut_0.vgad_0.vgatim_0.vsc_0.scnt_0.cnt = 10'b0;
 		

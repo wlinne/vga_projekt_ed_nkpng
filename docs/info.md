@@ -9,12 +9,13 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+Two FSM modules, two synchronous counters and timing constants defined in 640 x 480 px VGA standard specification form a driver which generates output to display a test image for the three color channels.
 
 ## How to test
 
-Explain how to use your project
+Connect external hardware for the vga port, power on, connect vga compatible device.
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+TinyVGA Pmod
+https://store.tinytapeout.com/products/TinyVGA-Pmod-p678647356

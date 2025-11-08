@@ -246,11 +246,14 @@ endmodule
 module test_image(input logic [9:0] x, y,
 		output logic [11:0] rgb);
 
+	logic [2:0]select;
+	assign select = y[8:6];
+
 	logic [3:0]scale;
 	assign scale = x[6:3];
 		
 	always_comb
-		case (y[8:6])
+		case (select)
 			3'b000: rgb = {scale, 4'h0, 4'h0};
 			3'b001: rgb = {4'h0, scale, 4'h0};
 			3'b010: rgb = {4'h0, 4'h0, scale};

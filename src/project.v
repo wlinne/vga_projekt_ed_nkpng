@@ -16,14 +16,22 @@ module tt_um_vga_projekt_ed_nkpng (
     input  wire       rst_n     // reset_n - low to reset
 );
 
-  // All output pins must be assigned. If not used, assign to 0.
-  vga_projekt_ed_nkpng_top vgad_0(clk, {uo_out, uio_out[7:4]}, uio_out[1], uio_out[0]);
-  
-  assign uio_out[3:2] = 2'b0;
-  assign uio_oe  = 8'b11111111;
+  // VGA signals
+  wire hsync;
+  wire vsync;
+  wire [11:0] vga;
 
-  // List all unused inputs to prevent warnings
-  wire _unused = &{ena, 1'b0, rst_n, 1'b0};
+  // TinyVGA PMOD
+  assign uo_out = {hsync, vga[9], vga[5], vga[1], vsync, vga[11], vga[7], vga[3]};
+
+  // Unused outputs assigned to 0.
+  assign uio_out = 0;
+  assign uio_oe  = 0;
+
+  // Suppress unused signals warning
+  wire _unused_ok = &{ena, ui_in, uio_in, vga, rst_n};
+
+  vga_projekt_ed_nkpng_top vgad_0(clk, vga, hsync, vsync);
   
 endmodule
 

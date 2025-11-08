@@ -17,7 +17,7 @@ module tt_um_vga_projekt_ed_nkpng (
 );
 
   // All output pins must be assigned. If not used, assign to 0.
-  vgad_0 vga_projekt_ed_nkpng_top(clk, {uo_out, uio_out[7:4]}, uio_out[1], uio_out[0]);
+  vga_projekt_ed_nkpng_top vgad_0(clk, {uo_out, uio_out[7:4]}, uio_out[1], uio_out[0]);
   
   assign uio_out[3:2] = 2'b0;
   assign uio_oe  = 8'b11111111;

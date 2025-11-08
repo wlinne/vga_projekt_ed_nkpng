@@ -6,20 +6,20 @@
 `default_nettype none
 
 module tt_um_vga_projekt_ed_nkpng (
-    input  wire [7:0] ui_in,    // Dedicated inputs
-    output wire [7:0] uo_out,   // Dedicated outputs
-    input  wire [7:0] uio_in,   // IOs: Input path
-    output wire [7:0] uio_out,  // IOs: Output path
-    output wire [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
-    input  wire       ena,      // always 1 when the design is powered, so you can ignore it
-    input  wire       clk,      // clock
-    input  wire       rst_n     // reset_n - low to reset
+    input  logic [7:0] ui_in,    // Dedicated inputs
+    output logic [7:0] uo_out,   // Dedicated outputs
+    input  logic [7:0] uio_in,   // IOs: Input path
+    output logic [7:0] uio_out,  // IOs: Output path
+    output logic [7:0] uio_oe,   // IOs: Enable path (active high: 0=input, 1=output)
+    input  logic       ena,      // always 1 when the design is powered, so you can ignore it
+    input  logic       clk,      // clock
+    input  logic       rst_n     // reset_n - low to reset
 );
 
   // VGA signals
-  wire hsync;
-  wire vsync;
-  wire [11:0] vga;
+  logic hsync;
+  logic vsync;
+  logic [11:0] vga;
 
   // TinyVGA PMOD
   assign uo_out = {hsync, vga[9], vga[5], vga[1], vsync, vga[11], vga[7], vga[3]};
@@ -29,7 +29,7 @@ module tt_um_vga_projekt_ed_nkpng (
   assign uio_oe  = 0;
 
   // Suppress unused signals warning
-  wire _unused_ok = &{ena, ui_in, uio_in, vga, rst_n};
+  logic _unused_ok = &{ena, ui_in, uio_in, vga, rst_n};
 
   vga_projekt_ed_nkpng_top vgad_0(clk, vga, hsync, vsync);
   

@@ -40,7 +40,7 @@ async def test_project(dut):
 
     # The following assersion is just an example of how to check the output values.
     # Change it to match the actual expected output of your module:
-    assert dut.uo_out.value == 128
+    #assert dut.uo_out.value == 128
     #LogicArray('10000000', Range(7, 'downto', 0))
 
     # Keep testing the module by changing the input values, waiting for

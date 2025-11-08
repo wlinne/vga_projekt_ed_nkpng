@@ -24,10 +24,10 @@ async def test_project(dut):
     dut.rst_n.value = 1
     
     dut.vgad_0.clk = 0;
-    dut.vgad_0.vgad_0.vgatim_0.hsc_0.vids_0.state = 2'b00;
-    dut.vgad_0.vgad_0.vgatim_0.vsc_0.vids_0.state = 2'b00;
-    dut.vgad_0.vgad_0.vgatim_0.hsc_0.scnt_0.cnt = 10'b0;
-    dut.vgad_0.vgad_0.vgatim_0.vsc_0.scnt_0.cnt = 10'b0;
+    dut.vgad_0.vgad_0.vgatim_0.hsc_0.vids_0.state = 0;
+    dut.vgad_0.vgad_0.vgatim_0.vsc_0.vids_0.state = 0;
+    dut.vgad_0.vgad_0.vgatim_0.hsc_0.scnt_0.cnt = 0;
+    dut.vgad_0.vgad_0.vgatim_0.vsc_0.scnt_0.cnt = 0;
     
     dut._log.info("Test project behavior")
 

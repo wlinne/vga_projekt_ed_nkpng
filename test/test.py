@@ -23,7 +23,7 @@ async def test_project(dut):
     await ClockCycles(dut.clk, 10)
     dut.rst_n.value = 1
     
-    dut.tbvgad_0.clk = 0;
+    dut.user_project.vgad_0.clk = 0;
     dut.user_project.vgad_0.vgad_0.vgatim_0.hsc_0.vids_0.state = 0;
     dut.user_project.vgad_0.vgad_0.vgatim_0.vsc_0.vids_0.state = 0;
     dut.user_project.vgad_0.vgad_0.vgatim_0.hsc_0.scnt_0.cnt = 0;
